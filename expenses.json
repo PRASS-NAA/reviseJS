@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2025-06-14T00:00:00.000Z",
+    "amount": 500,
+    "category": "food",
+    "note": "went out with friends and had to spend more"
+  },
+  {
+    "date": "2025-06-13T00:00:00.000Z",
+    "amount": 30,
+    "category": "food",
+    "note": "lunch ngp chappathi"
+  },
+  {
+    "date": null,
+    "amount": 200,
+    "category": "fuel",
+    "note": "petrol avenger"
+  }
+]
