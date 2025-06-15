@@ -1,5 +1,6 @@
 import PromptSync from "prompt-sync";
 import fs from "fs";
+import chalk from "chalk";
 
 const prompt = PromptSync();
 
@@ -15,7 +16,7 @@ const inputEmptyChecker = (input) =>
     const strinput = String(input);
     if(!strinput || strinput.trim().length == 0)
     {
-        console.log(" dont give empty input please !! restart program ");
+        console.log(`${chalk.red(" dont give empty input please !! restart program ")}`);
         process.exit();
     }
 }
@@ -41,6 +42,22 @@ const writeExpense = (expense) =>
         }
 }
 
+const checkFormat = (date) =>
+{
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+    console.log("Invalid format! Please use YYYY-MM-DD.");
+    return false;  
+    }
+
+    let parsedDate = new Date(date);
+    if(isNaN(parsedDate.getTime())) {
+        console.log("Invalid date! Please enter a real date.");
+        return false;
+    }
+    return true;   
+}
+
 const expenseTracker = () =>
 {
     //this function is for basic expense tracking
@@ -50,15 +67,37 @@ const expenseTracker = () =>
     let category;
     let note;
     
-    let dateInput = prompt("Enter date (YYYY-MM-DD): ");
-    //checkFormat();
-    inputEmptyChecker(dateInput);
-    date = new Date(dateInput);
+    let dateproceed = true;
+
+    while(dateproceed)
+    {
+        let dateInput = prompt("Enter date (YYYY-MM-DD): ");
+        inputEmptyChecker(dateInput);
+        if(checkFormat(dateInput))
+        {
+            dateproceed = false;
+            date = new Date(dateInput);
+        }else{
+            dateproceed = true;
+        }
+    
+    }
+    
     amount = parseInt(prompt("Enter the amount " ));
     inputEmptyChecker(amount);
-    category = prompt("Enter the category of expenditure (food, clothes , household, fuel , taxis, others ) : ");
-    inputEmptyChecker(category);
-    //checkcategory();
+    let proceed = true;
+    while(proceed)
+    {
+        category = prompt("Enter the category of expenditure (food, clothes , household, fuel , taxis, others ) : ");
+        inputEmptyChecker(category);
+        const validCategories = ["food", "clothes", "household", "fuel", "taxis", "others"];
+        if(!validCategories.includes(category.toLowerCase()))
+        {
+            console.log("enter a valid category !! ");
+        }else{
+            proceed = false;
+        }
+    }
     note = prompt(" Add note for this expenditure : ");
     inputEmptyChecker(note);
 
@@ -103,7 +142,8 @@ const readExpenses = (flag) =>
     }else
     {
         //search based on category (food, clothes , household, fuel , taxis, others )
-        let category = prompt("Enter the Category (food, clothes , household, fuel , taxis, others)");
+        let category = prompt(`Enter the Category ${chalk.green("(food, clothes , household, fuel , taxis, others)")}`);
+        inputEmptyChecker(category);
         let filteredcategory = [];
         for(let expense of expenses)
         {
@@ -138,7 +178,7 @@ const calSpecificExpense = (duration) =>
             }
         }
 
-        console.log(`Expenses Made This Week (from ${sevenDaysAgo} to ${today} `);
+        console.log(`Expenses Made This Week (from ${chalk.red(sevenDaysAgo)} to ${chalk.red(today)} `);
         if(filteredcategory.length == 0 )
         {
             console.log("No expenses made this week !! ");
@@ -159,7 +199,7 @@ const calSpecificExpense = (duration) =>
             }
         }
 
-        console.log(`Expenses made this month (from ${oneMonthAgo} to ${today} `);
+        console.log(`Expenses made this month (from ${chalk.blue(oneMonthAgo)} to ${chalk.blue(today)} `);
 
         if(filteredcategory.length == 0 )
         {
@@ -173,7 +213,7 @@ const calSpecificExpense = (duration) =>
 
 const showExpenses = () =>
 {
-    let choice = prompt("Press 1 for listing all expenditures made , Press 2 for listing expenditure by specific category, Press 3 to list expenses made in last week, Press 4 to list expenses made in last month : ");
+    let choice = prompt(`Press ${chalk.green("1")} for listing all expenditures made , Press ${chalk.green("2")} for listing expenditure by specific category, Press ${chalk.green("3")} to list expenses made in last week, Press ${chalk.green("4")} to list expenses made in last month : `);
 
     inputEmptyChecker(choice);
 
@@ -202,7 +242,53 @@ const showExpenses = () =>
 
 const analysis = () =>
 {
-    //no idea what i am going to do , prob some module
+    const expenses = readJson();
+    let groupedExpenses = {};
+    let amountByEachGrp = {};
+
+    let totalAmount = 0;
+    for(let expense of expenses)
+    {
+        totalAmount = totalAmount+expense.amount;
+        if (!groupedExpenses[expense.category]) 
+        {
+            groupedExpenses[expense.category] = [];
+        }
+        groupedExpenses[expense.category].push(expense);
+    }
+    
+
+    for (let category in groupedExpenses) {
+        amountByEachGrp[category] = sumofgrp(groupedExpenses[category]);
+    }
+
+    console.log(amountByEachGrp);
+
+    for(let category in amountByEachGrp)
+    {
+        let amount = amountByEachGrp[category];
+
+        let percent = ((amount/totalAmount) * 100).toFixed(2);
+
+        const barLength = Math.round((amount / totalAmount) * 40);
+        const bar = chalk.green("|".repeat(barLength));
+
+        console.log(`${chalk.yellow(category)} ₹${amount.toFixed(2)} (${percent}%)  ${bar}`);
+    }
+
+    console.log("Total Amount Spent : ",chalk.green(totalAmount));
+}
+
+const sumofgrp = (expensearr) =>
+{
+    let sum = 0;
+
+    for(let expense of expensearr)
+    {
+        sum = sum + expense.amount;
+    }
+
+    return sum;
 }
 
 
@@ -213,9 +299,10 @@ while(start)
 {
     // this while loop ensure sthe program doesnt stop if user accidentialy types anythig except a,b,e
     let choice;
-    console.log(" Press A for adding a new expense ");
-    console.log(" Press B for seeing all expenses ");
-    console.log(" Press e to stop the program !! ");
+    console.log(` Press ${chalk.yellowBright("A")} for adding a new expense `);
+    console.log(` Press ${chalk.green("B")} for seeing all expenses `);
+    console.log(` Press ${chalk.red("C")} for analysis of your expense`)
+    console.log(` Press ${chalk.blue("E")} to stop the program !! `);
 
     choice = prompt(" Make A Choice !! ");
     inputEmptyChecker(choice);
@@ -231,7 +318,10 @@ while(start)
         case "b":
             console.log("you made choice b");
             showExpenses();
-            break;    
+            break;
+        case "c" :
+            analysis();
+            break;       
         case "e":
             console.log(" Spend More , Live Happilly ");
             start = false;   
