@@ -12,9 +12,15 @@
     "note": "lunch ngp chappathi"
   },
   {
-    "date": null,
+    "date": "2025-03-23T00:00:00.000Z",
+    "amount": 800,
+    "category": "others",
+    "note": "5's bday"
+  },
+  {
+    "date": "2025-05-29T00:00:00.000Z",
     "amount": 200,
-    "category": "fuel",
-    "note": "petrol avenger"
+    "category": "food",
+    "note": "a2b while coming to chennai"
   }
 ]

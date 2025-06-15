@@ -117,10 +117,63 @@ const readExpenses = (flag) =>
     }
 }
 
+const calSpecificExpense = (duration) =>
+{
+    let expenses = readJson();
+
+    let filteredcategory = [];
+
+    let today = new Date();
+    if(duration == "week")
+    {
+        //expense made in last week
+        let sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        for(let expense of expenses)
+        {
+            let expenseDate = new Date(expense.date);
+            if(expenseDate >= sevenDaysAgo && expenseDate <= today)
+            {
+                filteredcategory.push(expense);
+            }
+        }
+
+        console.log(`Expenses Made This Week (from ${sevenDaysAgo} to ${today} `);
+        if(filteredcategory.length == 0 )
+        {
+            console.log("No expenses made this week !! ");
+        }else{
+            console.log(filteredcategory);
+        } 
+    }else{
+        //expense made in last month
+
+        let oneMonthAgo = new Date();
+        oneMonthAgo.setDate(today.getDate() - 30);
+        for(let expense of expenses)
+        {
+            let expenseDate = new Date(expense.date);
+            if(expenseDate >= oneMonthAgo && expenseDate <= today)
+            {
+                filteredcategory.push(expense);
+            }
+        }
+
+        console.log(`Expenses made this month (from ${oneMonthAgo} to ${today} `);
+
+        if(filteredcategory.length == 0 )
+        {
+            console.log("No expenses made this Month !! ");
+        }else{
+            console.log(filteredcategory);
+        } 
+    }
+}
+
 
 const showExpenses = () =>
 {
-    let choice = prompt("Press 1 for listing all expenditures made , Press 2 for listing expenditure by specific category : ");
+    let choice = prompt("Press 1 for listing all expenditures made , Press 2 for listing expenditure by specific category, Press 3 to list expenses made in last week, Press 4 to list expenses made in last month : ");
 
     inputEmptyChecker(choice);
 
@@ -134,8 +187,15 @@ const showExpenses = () =>
         case "2":
             readExpenses(true);
             break;
+        case "3":
+            calSpecificExpense("week");
+            break;
+        case "4":
+            calSpecificExpense("month");
+            break;        
         default:
-            console.log("Wrong Choice Made !! program has terminated !! ");        
+            console.log("Wrong Choice Made !! program has terminated !! ");
+            process.exit();        
     }
 }
 
@@ -154,8 +214,7 @@ while(start)
     // this while loop ensure sthe program doesnt stop if user accidentialy types anythig except a,b,e
     let choice;
     console.log(" Press A for adding a new expense ");
-    console.log(" Press B for Analysis (charts that show your expenditure pattern) ");
-    console.log(" Press C for seeing all expenses ");
+    console.log(" Press B for seeing all expenses ");
     console.log(" Press e to stop the program !! ");
 
     choice = prompt(" Make A Choice !! ");
@@ -170,10 +229,7 @@ while(start)
             expenseTracker();
             break;    
         case "b":
-            console.log("you made choice b ");
-            break;
-        case "c":
-            console.log("you made choice c");
+            console.log("you made choice b");
             showExpenses();
             break;    
         case "e":
