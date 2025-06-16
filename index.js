@@ -83,8 +83,9 @@ const expenseTracker = () =>
     
     }
     
-    amount = parseInt(prompt("Enter the amount " ));
+    amount = prompt("Enter the amount " );
     inputEmptyChecker(amount);
+    amount = parseInt(amount);
     let proceed = true;
     while(proceed)
     {
@@ -298,7 +299,7 @@ const deleteExpense = () =>
 
     expenses.forEach((expense, index) =>
     {
-        console.log(`${index + 1} ${expense.date}\t ${expense.amount}\t ${expense.category}\t ${expense.note}`);
+        console.log(`${chalk.green(index + 1)} ${expense.date}\t ${expense.amount}\t ${expense.category}\t ${expense.note}`);
         maxInd = index+1;
     })
 
@@ -308,8 +309,9 @@ const deleteExpense = () =>
     let deleteInd;
     while(flag)
     {
-        deleteInd = parseInt(prompt(`Please Enter The Number (1 to ${maxInd})`));
+        deleteInd = prompt(`Please Enter The Number (1 to ${maxInd})`);
         inputEmptyChecker(deleteInd);
+        deleteInd = parseInt(deleteInd);
         deleteInd = deleteInd-1;
 
         if(deleteInd >= 0 && deleteInd < maxInd)
