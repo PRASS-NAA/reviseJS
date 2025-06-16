@@ -1,6 +1,6 @@
-import PromptSync from "prompt-sync";
-import fs from "fs";
-import chalk from "chalk";
+import PromptSync from "prompt-sync"; // for input through console
+import fs from "fs"; // file handling in js
+import chalk from "chalk"; // for decorative, colorful output
 
 const prompt = PromptSync();
 
@@ -14,7 +14,7 @@ console.log(intx+inty);*/
 const inputEmptyChecker = (input) =>
 {
     const strinput = String(input);
-    if(!strinput || strinput.trim().length == 0)
+    if(!strinput || strinput.trim().length == 0) // removes whitespaces from both ends
     {
         console.log(`${chalk.red(" dont give empty input please !! restart program ")}`);
         process.exit();
@@ -35,7 +35,7 @@ const writeExpense = (expense) =>
 
             expenses.push(expense);
 
-        fs.writeFileSync("expenses.json",JSON.stringify(expenses, null, 2));
+        fs.writeFileSync("expenses.json",JSON.stringify(expenses, null, 2)); // null adn 2 are just to make things look good in file
         }catch(err)
         {
             console.log(err);
@@ -44,6 +44,7 @@ const writeExpense = (expense) =>
 
 const checkFormat = (date) =>
 {
+    //first check if its yyyy-mm-dd caz if u type yyyy/mm/dd also, getTime() will work 
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(date)) {
     console.log("Invalid format! Please use YYYY-MM-DD.");
@@ -99,7 +100,7 @@ const expenseTracker = () =>
             proceed = false;
         }
     }
-    note = prompt(" Add note for this expenditure : ");
+    note = prompt("Add note for this expenditure : ");
     inputEmptyChecker(note);
 
     expense["date"] = date;
@@ -114,6 +115,7 @@ const expenseTracker = () =>
 
 const readJson = () =>
 {
+    // main method that reads the expenses from the json file
     let expenses = [];
     try
     {
@@ -248,6 +250,8 @@ const analysis = () =>
     let amountByEachGrp = {};
 
     let totalAmount = 0;
+
+    // i tried to grp all expenses by category
     for(let expense of expenses)
     {
         totalAmount = totalAmount+expense.amount;
@@ -260,7 +264,7 @@ const analysis = () =>
     
 
     for (let category in groupedExpenses) {
-        amountByEachGrp[category] = sumofgrp(groupedExpenses[category]);
+        amountByEachGrp[category] = sumofgrp(groupedExpenses[category]); //sumofgrp caz i have stored an array of objects for each category so ill use that function to sum all amount of that specific category
     }
 
     console.log(amountByEachGrp);
@@ -332,6 +336,7 @@ const deleteExpense = () =>
             newExpenses.push(expense);
         }
     });
+
     try{
         fs.writeFileSync("expenses.json",JSON.stringify(newExpenses, null, 2));
     }catch(err)
