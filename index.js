@@ -291,6 +291,53 @@ const sumofgrp = (expensearr) =>
     return sum;
 }
 
+const deleteExpense = () =>
+{
+    const expenses = readJson();
+    let maxInd;
+
+    expenses.forEach((expense, index) =>
+    {
+        console.log(`${index + 1} ${expense.date}\t ${expense.amount}\t ${expense.category}\t ${expense.note}`);
+        maxInd = index+1;
+    })
+
+    //console.log(maxInd);
+
+    let flag = true;
+    let deleteInd;
+    while(flag)
+    {
+        deleteInd = parseInt(prompt(`Please Enter The Number (1 to ${maxInd})`));
+        inputEmptyChecker(deleteInd);
+        deleteInd = deleteInd-1;
+
+        if(deleteInd >= 0 && deleteInd < maxInd)
+        {
+            flag = false;
+        }else{
+            console.log("enter valid number !!");
+        }
+    }
+    
+
+    let newExpenses = [];
+
+    expenses.forEach((expense, index) =>
+    {
+        if(index != deleteInd)
+        {
+            newExpenses.push(expense);
+        }
+    });
+    try{
+        fs.writeFileSync("expenses.json",JSON.stringify(newExpenses, null, 2));
+    }catch(err)
+    {
+        console.log("error deleting and writing in file !! ", err);
+    }
+}
+
 
 console.log(" -- Welcome To My Expense Tracker Application -- ");
 
@@ -301,7 +348,8 @@ while(start)
     let choice;
     console.log(` Press ${chalk.yellowBright("A")} for adding a new expense `);
     console.log(` Press ${chalk.green("B")} for seeing all expenses `);
-    console.log(` Press ${chalk.red("C")} for analysis of your expense`)
+    console.log(` Press ${chalk.red("C")} for analysis of your expense`);
+    console.log(` Press ${chalk.white("D")} for deleting an expense`);
     console.log(` Press ${chalk.blue("E")} to stop the program !! `);
 
     choice = prompt(" Make A Choice !! ");
@@ -321,7 +369,10 @@ while(start)
             break;
         case "c" :
             analysis();
-            break;       
+            break;
+        case "d":
+            deleteExpense();
+            break;           
         case "e":
             console.log(" Spend More , Live Happilly ");
             start = false;   
