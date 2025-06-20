@@ -59,6 +59,26 @@ const checkFormat = (date) =>
     return true;   
 }
 
+const convertDate = (today) =>
+{
+    let day = today.getDate();
+    let month = today.getMonth() + 1; // jan means 0
+    let year = today.getFullYear();
+
+    if(String(day).length == 1)
+    {
+        day = String(day);
+        day = "0"+day;
+    }
+
+    if(String(month).length == 1)
+    {
+        month = String(month);
+        month = "0"+month;
+    }
+    return `${year}-${month}-${day}`;
+}
+
 const expenseTracker = () =>
 {
     //this function is for basic expense tracking
@@ -72,12 +92,24 @@ const expenseTracker = () =>
 
     while(dateproceed)
     {
-        let dateInput = prompt("Enter date (YYYY-MM-DD): ");
-        inputEmptyChecker(dateInput);
+        let dateInput = prompt("Enter date (YYYY-MM-DD) (Press enter for Today's Date) : ");
+        //inputEmptyChecker(dateInput);
+
+        if(!dateInput || dateInput.trim().length == 0)
+        {
+            date = new Date();
+            console.log(date);
+            dateInput = convertDate(date);
+            console.log(dateInput);
+        }
         if(checkFormat(dateInput))
         {
+            if(dateInput.trim().length != 0)
+            {
+                date = new Date(dateInput);
+            }
+
             dateproceed = false;
-            date = new Date(dateInput);
         }else{
             dateproceed = true;
         }
@@ -88,18 +120,15 @@ const expenseTracker = () =>
     inputEmptyChecker(amount);
     amount = parseInt(amount);
     let proceed = true;
-    while(proceed)
-    {
-        category = prompt("Enter the category of expenditure (food, clothes , household, fuel , taxis, others ) : ");
-        inputEmptyChecker(category);
-        const validCategories = ["food", "clothes", "household", "fuel", "taxis", "others"];
+    category = prompt("Enter the category of expenditure : ");
+    inputEmptyChecker(category);
+        /*const validCategories = ["food", "clothes", "household", "fuel", "taxis", "others"];
         if(!validCategories.includes(category.toLowerCase()))
         {
             console.log("enter a valid category !! ");
         }else{
             proceed = false;
-        }
-    }
+        }*/
     note = prompt("Add note for this expenditure : ");
     inputEmptyChecker(note);
 
@@ -145,7 +174,7 @@ const readExpenses = (flag) =>
     }else
     {
         //search based on category (food, clothes , household, fuel , taxis, others )
-        let category = prompt(`Enter the Category ${chalk.green("(food, clothes , household, fuel , taxis, others)")}`);
+        let category = prompt(`Enter the Category ${chalk.green("(food, clothes , household, fuel , taxis, or others)")}`);
         inputEmptyChecker(category);
         let filteredcategory = [];
         for(let expense of expenses)
@@ -172,14 +201,19 @@ const calSpecificExpense = (duration) =>
         //expense made in last week
         let sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
-        for(let expense of expenses)
+        /*for(let expense of expenses)
         {
             let expenseDate = new Date(expense.date);
             if(expenseDate >= sevenDaysAgo && expenseDate <= today)
             {
                 filteredcategory.push(expense);
             }
-        }
+        }*/
+        filteredcategory = expenses.filter((expense, index) =>
+        {
+            let expenseDate = new Date(expense.date);
+            return (expenseDate >= sevenDaysAgo && expenseDate <=today);
+        });
 
         console.log(`Expenses Made This Week (from ${chalk.red(sevenDaysAgo)} to ${chalk.red(today)} `);
         if(filteredcategory.length == 0 )
@@ -193,14 +227,19 @@ const calSpecificExpense = (duration) =>
 
         let oneMonthAgo = new Date();
         oneMonthAgo.setDate(today.getDate() - 30);
-        for(let expense of expenses)
+        /*for(let expense of expenses)
         {
             let expenseDate = new Date(expense.date);
             if(expenseDate >= oneMonthAgo && expenseDate <= today)
             {
                 filteredcategory.push(expense);
             }
-        }
+         }*/
+        filteredcategory = expenses.filter((expense,index) =>
+        {
+            let expenseDate = new Date(expense.date);
+            return (expenseDate >= oneMonthAgo && expenseDate <= today);
+        });
 
         console.log(`Expenses made this month (from ${chalk.blue(oneMonthAgo)} to ${chalk.blue(today)} `);
 
@@ -216,7 +255,7 @@ const calSpecificExpense = (duration) =>
 
 const showExpenses = () =>
 {
-    let choice = prompt(`Press ${chalk.green("1")} for listing all expenditures made , Press ${chalk.green("2")} for listing expenditure by specific category, Press ${chalk.green("3")} to list expenses made in last week, Press ${chalk.green("4")} to list expenses made in last month : `);
+    let choice = prompt(`Press ${chalk.green("1")} for listing all expenditures made \nPress ${chalk.green("2")} for listing expenditure by specific category \nPress ${chalk.green("3")} to list expenses made in last week \nPress ${chalk.green("4")} to list expenses made in last month : `);
 
     inputEmptyChecker(choice);
 
@@ -276,7 +315,7 @@ const analysis = () =>
         let percent = ((amount/totalAmount) * 100).toFixed(2);
 
         const barLength = Math.round((amount / totalAmount) * 40);
-        const bar = chalk.green("|".repeat(barLength));
+        const bar = chalk.blue("|".repeat(barLength));
 
         console.log(`${chalk.yellow(category)} ₹${amount.toFixed(2)} (${percent}%)  ${bar}`);
     }
@@ -367,11 +406,11 @@ while(start)
     switch(ch)
     {
         case "a":
-            console.log("you made choice a");
+            //console.log("you made choice a");
             expenseTracker();
             break;    
         case "b":
-            console.log("you made choice b");
+            //console.log("you made choice b");
             showExpenses();
             break;
         case "c" :
