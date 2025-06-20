@@ -98,9 +98,9 @@ const expenseTracker = () =>
         if(!dateInput || dateInput.trim().length == 0)
         {
             date = new Date();
-            console.log(date);
+            //console.log(date);
             dateInput = convertDate(date);
-            console.log(dateInput);
+            //console.log(dateInput);
         }
         if(checkFormat(dateInput))
         {
@@ -137,7 +137,7 @@ const expenseTracker = () =>
     expense["category"] = category;
     expense["note"] = note;
 
-    console.log(expense);
+    console.table(expense);
 
     writeExpense(expense);
 }
@@ -170,7 +170,7 @@ const readExpenses = (flag) =>
     if(!flag)
     {
         //no filtering only show all expenses
-        console.log(expenses);
+        console.table(expenses);
     }else
     {
         //search based on category (food, clothes , household, fuel , taxis, others )
@@ -185,7 +185,7 @@ const readExpenses = (flag) =>
             }
         }
 
-        console.log(filteredcategory);
+        console.table(filteredcategory);
     }
 }
 
@@ -220,7 +220,7 @@ const calSpecificExpense = (duration) =>
         {
             console.log("No expenses made this week !! ");
         }else{
-            console.log(filteredcategory);
+            console.table(filteredcategory);
         } 
     }else{
         //expense made in last month
@@ -247,7 +247,7 @@ const calSpecificExpense = (duration) =>
         {
             console.log("No expenses made this Month !! ");
         }else{
-            console.log(filteredcategory);
+            console.table(filteredcategory);
         } 
     }
 }
@@ -352,7 +352,13 @@ const deleteExpense = () =>
     let deleteInd;
     while(flag)
     {
-        deleteInd = prompt(`Please Enter The Number (1 to ${maxInd})`);
+        deleteInd = prompt(`Please Enter The Number (1 to ${maxInd}) or Press ${chalk.red("enter")} to ${chalk.red("exit")} the operation : `);
+
+        if(!deleteInd)
+        {
+            console.log("operation cancelled !! ");
+            return;
+        }
         inputEmptyChecker(deleteInd);
         deleteInd = parseInt(deleteInd);
         deleteInd = deleteInd-1;
@@ -392,11 +398,14 @@ while(start)
 {
     // this while loop ensure sthe program doesnt stop if user accidentialy types anythig except a,b,e
     let choice;
-    console.log(` Press ${chalk.yellowBright("A")} for adding a new expense `);
-    console.log(` Press ${chalk.green("B")} for seeing all expenses `);
-    console.log(` Press ${chalk.red("C")} for analysis of your expense`);
-    console.log(` Press ${chalk.white("D")} for deleting an expense`);
-    console.log(` Press ${chalk.blue("E")} to stop the program !! `);
+    const inputOptions = [` Press ${chalk.yellowBright("A")} for adding a new expense `, ` Press ${chalk.green("B")} for seeing all expenses `,` Press ${chalk.red("C")} for analysis of your expense`,
+        ` Press ${chalk.white("D")} for deleting an expense`,` Press ${chalk.blue("E")} to stop the program !! `
+    ]
+    
+    for(let option of inputOptions)
+    {
+        console.log(option);
+    }
 
     choice = prompt(" Make A Choice !! ");
     inputEmptyChecker(choice);
